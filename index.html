@@ -1554,86 +1554,114 @@ window.addEventListener('load', () => {
         }
     });
 });
+// ===============================
+// PACKAGES — 25% ZOOM ON HOVER (NOT FULL SCREEN)
+// ===============================
+document.querySelectorAll('.package-card').forEach(card => {
+
+    // Zoom-in hover
+    card.addEventListener('mouseenter', () => {
+        gsap.to(card, {
+            scale: 1.25,          // ← 25% ZOOM
+            zIndex: 999,
+            rotationY: 5,
+            rotationX: 5,
+            duration: 0.5,
+            ease: "power2.out"
+        });
+    });
+
+    // Move with cursor
+    card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width - 0.5;
+        const y = (e.clientY - rect.top) / rect.height - 0.5;
+
+        gsap.to(card, {
+            rotationY: x * 15,
+            rotationX: -y * 15,
+            duration: 0.3,
+            ease: "power2.out"
+        });
+    });
+
+    // Reset on leave
+    card.addEventListener('mouseleave', () => {
+        gsap.to(card, {
+            scale: 1,              // ← back to normal
+            rotationX: 0,
+            rotationY: 0,
+            zIndex: 1,
+            duration: 0.6,
+            ease: "elastic.out(1, 0.4)"
+        });
+    });
+
+});
 
 // ═══════════════════════════════════════════════════════════════
 // 🏨 HOTELS - LIQUID MORPH + DEPTH
 // ═══════════════════════════════════════════════════════════════
-
-gsap.utils.toArray('.hotel-card').forEach((card, i) => {
-    const img = card.querySelector('.hotel-image');
+// ============================================
+// HOTELS — 360° ENTRY + AR/VR MOTION EFFECT
+// ============================================
+gsap.utils.toArray('[data-hotel]').forEach((hotel, i) => {
     
-    // Entrance with liquid morph
-    gsap.from(card, {
-        clipPath: "circle(0% at 50% 50%)",
+    // 360 Entry Animation
+    gsap.from(hotel, {
         opacity: 0,
-        scale: 0.8,
-        rotation: 45,
+        rotationY: 360,
+        rotationX: 45,
+        z: -300,
+        scale: 0.4,
         duration: 1.8,
-        delay: i * 0.1,
+        delay: i * 0.15,
         ease: "expo.out",
         scrollTrigger: {
-            trigger: card,
-            start: "top 90%"
+            trigger: hotel,
+            start: "top 85%"
         }
     });
-    
-    // Image parallax with scale
-    gsap.to(img, {
-        y: -50,
-        scale: 1.2,
-        ease: "none",
-        scrollTrigger: {
-            trigger: card,
-            start: "top bottom",
-            end: "bottom top",
-            scrub: 2
-        }
-    });
-    
-    // Blur reveal
-    gsap.from(card, {
-        filter: "blur(20px) grayscale(1)",
-        duration: 1.5,
-        scrollTrigger: {
-            trigger: card,
-            start: "top 90%"
-        }
-    });
-    
-    // Advanced hover effects
-    card.addEventListener('mouseenter', () => {
-        gsap.to(card, {
-            scale: 1.1,
-            rotationY: 15,
-            z: 80,
-            boxShadow: "0 30px 60px rgba(0,0,0,0.3)",
-            duration: 0.6,
-            ease: "expo.out"
+
+    // AR VR Motion Parallax Effect
+    hotel.addEventListener("mousemove", (e) => {
+        const rect = hotel.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width - 0.5;
+        const y = (e.clientY - rect.top) / rect.height - 0.5;
+
+        gsap.to(hotel, {
+            rotationY: x * 25,
+            rotationX: -y * 25,
+            z: 60,
+            duration: 0.4,
+            ease: "power3.out"
         });
-        
-        gsap.to(img, {
+
+        gsap.to(hotel.querySelector('.hotel-image'), {
+            x: x * 30,
+            y: y * 30,
             scale: 1.15,
-            filter: "brightness(1.2) contrast(1.2)",
-            duration: 0.6,
+            duration: 0.4,
             ease: "power2.out"
         });
     });
-    
-    card.addEventListener('mouseleave', () => {
-        gsap.to(card, {
-            scale: 1,
+
+    hotel.addEventListener("mouseleave", () => {
+        gsap.to(hotel, {
             rotationY: 0,
+            rotationX: 0,
             z: 0,
-            boxShadow: "0 14px 40px rgba(0,0,0,0.12)",
-            duration: 0.6,
-            ease: "expo.out"
-        });
-        
-        gsap.to(img, {
             scale: 1,
-            filter: "brightness(1) contrast(1)",
-            duration: 0.6,
-            ease: "power2.out"
+            duration: 1,
+            ease: "elastic.out(1, 0.4)"
+        });
+
+        gsap.to(hotel.querySelector('.hotel-image'), {
+            x: 0,
+            y: 0,
+            scale: 1,
+            duration: 0.8,
+            ease: "elastic.out(1, 0.5)"
         });
     });
 });
